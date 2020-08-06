@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class RpcProtocol implements Serializable {
+
     private static final long serialVersionUID = -1102180003395190700L;
+
     private String uuid;
     private String host;
     private int port;
@@ -14,8 +16,7 @@ public class RpcProtocol implements Serializable {
     private String serviceName;
 
     public String toJson() {
-        String json = JsonUtil.objectToJson(this);
-        return json;
+        return JsonUtil.objectToJson(this);
     }
 
     public static RpcProtocol fromJson(String json) {

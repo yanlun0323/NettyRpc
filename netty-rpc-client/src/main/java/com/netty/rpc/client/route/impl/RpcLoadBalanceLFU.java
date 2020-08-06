@@ -1,6 +1,5 @@
 package com.netty.rpc.client.route.impl;
 
-import com.netty.rpc.client.handler.RpcClientHandler;
 import com.netty.rpc.client.route.RpcLoadBalance;
 import com.netty.rpc.protocol.RpcProtocol;
 
@@ -67,8 +66,8 @@ public class RpcLoadBalanceLFU extends RpcLoadBalance {
     }
 
     @Override
-    public RpcProtocol route(String serviceName, Map<RpcProtocol, RpcClientHandler> connectedServerNodes) throws Exception {
-        Map<String, List<RpcProtocol>> serviceMap = getServiceMap(connectedServerNodes);
+    public RpcProtocol route(String serviceName, Map<String, HashSet<RpcProtocol>> service) throws Exception {
+        Map<String, List<RpcProtocol>> serviceMap = getServiceMap(service);
         List<RpcProtocol> addressList = serviceMap.get(serviceName);
         if (addressList != null && addressList.size() > 0) {
             return doRoute(serviceName, addressList);

@@ -9,10 +9,10 @@ import com.app.test.service.HelloService;
 public class RpcTest {
 
     public static void main(String[] args) throws InterruptedException {
-        final RpcClient rpcClient = new RpcClient("10.217.59.164:2181");
+        final RpcClient rpcClient = new RpcClient("172.19.80.13:2181");
 
         int threadNum = 1;
-        final int requestNum = 10;
+        final int requestNum = 200;
         Thread[] threads = new Thread[threadNum];
 
         long startTime = System.currentTimeMillis();
@@ -22,7 +22,7 @@ public class RpcTest {
                 @Override
                 public void run() {
                     for (int i = 0; i < requestNum; i++) {
-                        final HelloService syncClient = rpcClient.createService(HelloService.class);
+                        final HelloService syncClient = RpcClient.createService(HelloService.class);
                         String result = syncClient.hello(Integer.toString(i));
                         if (!result.equals("Hello! " + i)) {
                             System.out.println("error = " + result);
@@ -30,7 +30,7 @@ public class RpcTest {
                             System.out.println("result = " + result);
                         }
                         try {
-                            Thread.sleep(20 * 1000);
+                            Thread.sleep(2 * 1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

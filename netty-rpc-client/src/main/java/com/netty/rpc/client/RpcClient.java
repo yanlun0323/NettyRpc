@@ -16,7 +16,9 @@ import java.util.concurrent.TimeUnit;
  * @author luxiaoxun
  */
 public class RpcClient {
+
     private ServiceDiscovery serviceDiscovery;
+
     private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(16, 16,
             600L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(1000));
 

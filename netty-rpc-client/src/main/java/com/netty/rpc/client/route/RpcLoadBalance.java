@@ -1,33 +1,38 @@
 package com.netty.rpc.client.route;
 
-import com.netty.rpc.client.handler.RpcClientHandler;
 import com.netty.rpc.protocol.RpcProtocol;
-import org.apache.commons.collections4.map.HashedMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by luxiaoxun on 2020-08-01.
  */
 public abstract class RpcLoadBalance {
-    // Service map: group by service name
-    protected Map<String, List<RpcProtocol>> getServiceMap(Map<RpcProtocol, RpcClientHandler> connectedServerNodes) {
-        Map<String, List<RpcProtocol>> serviceMap = new HashedMap<>();
-        if (connectedServerNodes != null && connectedServerNodes.size() > 0) {
-            for (RpcProtocol rpcProtocol : connectedServerNodes.keySet()) {
-                List<RpcProtocol> rpcProtocolList = serviceMap.get(rpcProtocol.getServiceName());
-                if (rpcProtocolList == null) {
-                    rpcProtocolList = new ArrayList<>();
-                }
-                rpcProtocolList.add(rpcProtocol);
-                serviceMap.putIfAbsent(rpcProtocol.getServiceName(), rpcProtocolList);
-            }
+
+    /**
+     * Service map: group by service name
+     *
+     * @param service
+     * @return
+     */
+    protected Map<String, List<RpcProtocol>> getServiceMap(Map<String, HashSet<RpcProtocol>> service) {
+        if (!service.isEmpty()) {
+            return service.entrySet().stream()
+                    .map(Map.Entry::getValue)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.groupingBy(RpcProtocol::getServiceName));
         }
-        return serviceMap;
+        return Collections.emptyMap();
     }
 
-    // Route the connection for service key
-    public abstract RpcProtocol route(String serviceName, Map<RpcProtocol, RpcClientHandler> connectedServerNodes) throws Exception;
+    /**
+     * Route the connection for service key
+     *
+     * @param serviceName
+     * @param service
+     * @return
+     * @throws Exception
+     */
+    public abstract RpcProtocol route(String serviceName, Map<String, HashSet<RpcProtocol>> service) throws Exception;
 }

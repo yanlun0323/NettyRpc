@@ -3,7 +3,9 @@ package com.netty.rpc.server.registry;
 import cn.hutool.core.util.IdUtil;
 import com.netty.rpc.config.Constant;
 import com.netty.rpc.protocol.RpcProtocol;
+import com.netty.rpc.util.StringUtils;
 import com.netty.rpc.zookeeper.CuratorClient;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +40,11 @@ public class ServiceRegistry {
                     rpcProtocol.setHost(host);
                     rpcProtocol.setPort(port);
                     rpcProtocol.setServiceName(key);
-                    String serviceData = rpcProtocol.toJson();
-                    byte[] bytes = serviceData.getBytes();
-                    String path = Constant.ZK_DATA_PATH + "-" + uuid;
-                    this.curatorClient.createPathData(path, bytes);
+                    String serviceData = StringUtils
+                            .toQueryString(BeanUtilsBean.getInstance().describe(rpcProtocol));
+                    String path = String
+                            .format("/%s/%s/%s", key, Constant.ZK_PROVIDERS, serviceData);
+                    this.curatorClient.createPath(path);
                     pathList.add(path);
                     logger.info("Registry new service:{}, host:{}, port:{}", key, host, port);
                 } catch (Exception e) {
